@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/id_card_widget.dart';
+import 'id_card_widget.dart';
+import 'id_card_data.dart';
 
 void main() {
   runApp(const MyApp());
@@ -8,21 +9,23 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    const IdCardData myIdCardData = IdCardData(
+      studentId: '210041214',
+      studentName: 'FAIYAZ ABRAR',
+      program: 'B.Sc. in CSE',
+      department: 'CSE',
+      location: 'Bangladesh',
+      studentPhotoBytes: null, 
+    );
+
     return MaterialApp(
       title: 'ID Card Replica',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: const IdCardWidget(),
+      home: const IdCardWidget(cardData: myIdCardData),
     );
   }
 }
-
-
-
-
-
-  
