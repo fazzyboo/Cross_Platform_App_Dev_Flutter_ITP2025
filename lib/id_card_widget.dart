@@ -1,166 +1,176 @@
 import 'package:flutter/material.dart';
 import 'dart:math';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:flutter_application_1/id_card_form_page.dart'; // Import the data model
-import 'dart:typed_data'; // Import for Uint8List
 
 class IdCardWidget extends StatefulWidget {
-  final IdCardData cardData;
-
-  const IdCardWidget({super.key, required this.cardData});
+  const IdCardWidget({super.key});
 
   @override
   State<IdCardWidget> createState() => _IdCardWidgetState();
 }
 
 class _IdCardWidgetState extends State<IdCardWidget> {
-  Color _cardBackgroundColor = const Color(0xFFF0F0F0); // Light grey background
-  Color _accentColor = const Color(0xFF1A5220); // Darker green color
+  Color _cardBackgroundColor = Colors.white;
+  Color _accentColor = const Color(0xFF1B5E20); // Dark green color
   String _currentFontFamily = 'Roboto';
+
+  final List<String> _fontFamilies = [
+    'Roboto',
+    'Open Sans',
+    'Lato',
+    'Montserrat',
+    'Oswald',
+    'Playfair Display',
+    'Merriweather',
+    'Dancing Script',
+    'Pacifico',
+    'Indie Flower',
+  ];
+
+  void _changeColorsAndFont() {
+    setState(() {
+      /*_cardBackgroundColor = Color.fromARGB(
+        255,
+        Random().nextInt(256),
+        Random().nextInt(256),
+        Random().nextInt(256),
+      );
+      _accentColor = Color.fromARGB(
+        255,
+        Random().nextInt(256),
+        Random().nextInt(256),
+        Random().nextInt(256),
+      );*/
+      _currentFontFamily = _fontFamilies[Random().nextInt(_fontFamilies.length)];
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    const double photoHeight = 170;
-    const double photoWidth = 140;
-    // Height of the green section to cover half of the photo's background
-    const double topGreenSectionHeight = 120 + (photoHeight / 2);
-
     return Scaffold(
       backgroundColor: _cardBackgroundColor,
       body: Center(
         child: Container(
-          width: 380,
-          height: 600,
+          width: 350, // Approximate width of an ID card
+          height: 550, // Approximate height of an ID card
           decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(20),
+            color: _cardBackgroundColor,
+            borderRadius: BorderRadius.circular(15),
             boxShadow: [
               BoxShadow(
                 color: Colors.grey.withOpacity(0.5),
-                spreadRadius: 3,
-                blurRadius: 10,
-                offset: const Offset(0, 3),
+                spreadRadius: 5,
+                blurRadius: 7,
+                offset: const Offset(0, 3), // changes position of shadow
               ),
             ],
           ),
-          child: Stack(
+          child: Column(
             children: [
               // Top green section
-              Positioned(
-                top: 0,
-                left: 0,
-                right: 0,
-                child: Container(
-                  height: topGreenSectionHeight,
-                  decoration: BoxDecoration(
-                    color: _accentColor,
-                    borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start, // Center content vertically
-                    children: [
-                      SizedBox(height: 15),
-                      Image.asset(
-                        'assets/images/iut.png',
-                        height: 70,
-                      ),
-                      const SizedBox(height: 5),
-                      Text(
-                        'ISLAMIC UNIVERSITY OF TECHNOLOGY',
-                        style: GoogleFonts.getFont(_currentFontFamily).copyWith(
-                          color: Colors.white,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 0.8,
-                        ),
-                      ),
-                    ],
-                  ),
+              Container(
+                height: 100,
+                decoration: BoxDecoration(
+                  color: _accentColor,
+                  borderRadius: const BorderRadius.vertical(top: Radius.circular(15)),
                 ),
-              ),
-              // Student Photo
-              Positioned(
-                top: topGreenSectionHeight - (photoHeight / 2), // Position to overlap half
-                left: (380 - photoWidth) / 2, // Center horizontally
-                child: Container(
-                  width: photoWidth,
-                  height: photoHeight,
-                  decoration: BoxDecoration(
-                    border: Border.all(color: _accentColor, width: 6), // Dark green, thicker border
-                    color: Colors.white,
-                  ),
-                  child: widget.cardData.studentPhotoBytes != null
-                      ? Image.memory(
-                          widget.cardData.studentPhotoBytes!,
-                          fit: BoxFit.cover,
-                        )
-                      : Image.asset(
-                          'assets/images/Faiyaz-Abrar.jpg',
-                          fit: BoxFit.cover,
-                        ),
-                ),
-              ),
-              // Information Rows
-              Positioned(
-                top: topGreenSectionHeight + (photoHeight / 2) + 20, // Below the photo, with some spacing
-                left: 100,
-                right: 0,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center, // Center the column itself
+                child: Stack(
                   children: [
-                    _buildInfoRow(
-                      icon: Icons.vpn_key,
-                      label: 'Student ID',
-                      value: widget.cardData.studentId,
-                      isId: true,
+                    Align(
+                      alignment: Alignment.topCenter,
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 10.0),
+                        child: Image.asset(
+                          'assets/images/iut.png',
+                          height: 60,
+                        ),
+                      ),
                     ),
-                    const SizedBox(height: 10),
-                    _buildInfoRow(
-                      icon: Icons.person,
-                      label: 'Student Name',
-                      value: widget.cardData.studentName,
-                    ),
-                    const SizedBox(height: 10),
-                    _buildInfoRow(
-                      icon: Icons.school,
-                      label: 'Program',
-                      value: widget.cardData.program,
-                    ),
-                    const SizedBox(height: 10),
-                    _buildInfoRow(
-                      icon: Icons.apartment,
-                      label: 'Department',
-                      value: widget.cardData.department,
-                    ),
-                    const SizedBox(height: 10),
-                    _buildInfoRow(
-                      icon: Icons.location_on,
-                      label: '', // Removed label
-                      value: widget.cardData.location,
+                    Align(
+                      alignment: Alignment.bottomCenter,
+                      child: Padding(
+                        padding: const EdgeInsets.only(bottom: 10.0),
+                        child: Text(
+                          'ISLAMIC UNIVERSITY OF TECHNOLOGY',
+                          style: GoogleFonts.getFont(_currentFontFamily).copyWith(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 0.5,
+                          ),
+                        ),
+                      ),
                     ),
                   ],
                 ),
               ),
-              // Bottom green section
-              Positioned(
-                bottom: 0,
-                left: 0,
-                right: 0,
+              // Student Photo
+              Padding(
+                padding: const EdgeInsets.only(top: 20.0, bottom: 10.0),
                 child: Container(
-                  height: 40,
-                  width: double.infinity,
+                  width: 120,
+                  height: 150,
                   decoration: BoxDecoration(
-                    color: _accentColor,
-                    borderRadius: const BorderRadius.vertical(bottom: Radius.circular(20)),
+                    border: Border.all(color: Colors.black, width: 2),
+                    color: Colors.blueGrey[50], // Placeholder background
                   ),
-                  alignment: Alignment.center,
-                  child: Text(
-                    'A subsidiary organ of OIC',
-                    style: GoogleFonts.getFont(_currentFontFamily).copyWith(
-                      color: Colors.white,
-                      fontSize: 12,
-                      fontStyle: FontStyle.italic,
-                    ),
+                  child: Image.asset(
+                    'assets/images/Faiyaz-Abrar.jpg',
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+              // Student ID
+              _buildInfoRow(
+                icon: Icons.credit_card,
+                label: 'Student ID',
+                value: '210041214',
+                isId: true,
+              ),
+              const SizedBox(height: 10),
+              // Student Name
+              _buildInfoRow(
+                icon: Icons.person,
+                label: 'Student Name',
+                value: 'Faiyaz Abrar',
+              ),
+              const SizedBox(height: 10),
+              // Program
+              _buildInfoRow(
+                icon: Icons.school,
+                label: 'Program',
+                value: 'B.Sc. in CSE',
+              ),
+              const SizedBox(height: 10),
+              // Department
+              _buildInfoRow(
+                icon: Icons.business,
+                label: 'Department',
+                value: 'CSE',
+              ),
+              const SizedBox(height: 10),
+              // Location
+              _buildInfoRow(
+                icon: Icons.location_on,
+                label: 'Location',
+                value: 'Bangladesh',
+              ),
+              const Spacer(),
+              // Bottom green section
+              Container(
+                height: 40,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: _accentColor,
+                  borderRadius: const BorderRadius.vertical(bottom: Radius.circular(15)),
+                ),
+                alignment: Alignment.center,
+                child: Text(
+                  'A subsidiary organ of OIC',
+                  style: GoogleFonts.getFont(_currentFontFamily).copyWith(
+                    color: Colors.white,
+                    fontSize: 12,
+                    fontStyle: FontStyle.italic,
                   ),
                 ),
               ),
@@ -168,15 +178,11 @@ class _IdCardWidgetState extends State<IdCardWidget> {
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          Navigator.pop(context);
-        },
-        label: const Text('Go Back to Form'),
-        icon: const Icon(Icons.arrow_back),
-        tooltip: 'Go Back to Form',
+      floatingActionButton: FloatingActionButton(
+        onPressed: _changeColorsAndFont,
+        tooltip: 'Change Colors and Font',
+        child: const Icon(Icons.shuffle),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
 
@@ -186,86 +192,48 @@ class _IdCardWidgetState extends State<IdCardWidget> {
     required String value,
     bool isId = false,
   }) {
-    final bool isStacked = (label == 'Student ID' || label == 'Student Name');
-
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start, // Left-align content within this column
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.start, // Left-align icon and label
-            children: [
-              Icon(icon, size: 18, color: Colors.grey[700]),
-              const SizedBox(width: 8),
-              if (label.isNotEmpty) // Only show label if not empty (for Location)
-                Text(
-                  label,
-                  style: GoogleFonts.getFont(_currentFontFamily).copyWith(
-                    fontSize: 14,
-                    color: Colors.grey[700],
-                  ),
-                ),
-              if (!isStacked && label.isNotEmpty) // Add space if not stacked and label is present
-                const SizedBox(width: 4),
-              if (!isStacked) // Display value on same line for Program, Department, Location
-                Text(
-                  value,
-                  style: GoogleFonts.getFont(_currentFontFamily).copyWith(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
-                  ),
-                ),
-            ],
+          Icon(icon, size: 18, color: Colors.grey[700]),
+          const SizedBox(width: 8),
+          Text(
+            label,
+            style: GoogleFonts.getFont(_currentFontFamily).copyWith(
+              fontSize: 14,
+              color: Colors.grey[700],
+            ),
           ),
-          if (isStacked) // Display value on new line for Student ID and Student Name
-            isId
-                ? Padding( // Apply padding specifically for Student ID
-                    padding: const EdgeInsets.only(left: 0.0, top: 4.0), // Initial padding for ID
-                    child: Container( // Special handling for Student ID pill
-                      padding: const EdgeInsets.only(left: 10, right: 26, top: 6, bottom: 6), // Allows separate left/right padding
-                      decoration: BoxDecoration(
-                        color: _accentColor, // Changed to dark green accent color
-                        borderRadius: BorderRadius.circular(18),
-                      ),
-                      child: Row( // Use Row to place circle and text side-by-side
-                        mainAxisSize: MainAxisSize.min, // Wrap content
-                        children: [
-                          Container(
-                            width: 18,
-                            height: 18,
-                            decoration: const BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: Color.fromARGB(255, 0, 119, 255), // Blue circle
-                            ),
-                          ),
-                          const SizedBox(width: 8), // Spacing between circle and text
-                          Text(
-                            value,
-                            style: GoogleFonts.getFont(_currentFontFamily).copyWith(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  )
-                : Padding( // Apply padding specifically for Student Name
-                    padding: const EdgeInsets.only(left: 20.0, top: 4.0), // Initial padding for Name
-                    child: Text( // For Student Name
-                      value,
-                      style: GoogleFonts.getFont(_currentFontFamily).copyWith(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black87,
-                      ),
-                    ),
-                  ),
+          const Spacer(),
+          if (isId)
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+              decoration: BoxDecoration(
+                color: const Color(0xFF00BCD4), // Light blue for ID background
+                borderRadius: BorderRadius.circular(15),
+              ),
+              child: Text(
+                value,
+                style: GoogleFonts.getFont(_currentFontFamily).copyWith(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+            )
+          else
+            Text(
+              value,
+              style: GoogleFonts.getFont(_currentFontFamily).copyWith(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+              ),
+            ),
         ],
       ),
     );
-  }
+}
 }
