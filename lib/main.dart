@@ -1,9 +1,22 @@
 import 'package:flutter/material.dart';
-import 'id_card_widget.dart';
-import 'id_card_data.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:rest_api_call/router/app_router.dart';
+import 'package:rest_api_call/services/local_database_service.dart';
+import 'package:rest_api_call/news_provider.dart'; // Import news_provider to access localDatabaseServiceProvider
 
-void main() {
-  runApp(const MyApp());
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final localDatabaseService = LocalDatabaseService();
+  await localDatabaseService.init(); // Initialize the database service
+
+  runApp(
+    ProviderScope(
+      overrides: [
+        localDatabaseServiceProvider.overrideWithValue(localDatabaseService),
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -11,21 +24,13 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const IdCardData myIdCardData = IdCardData(
-      studentId: '210041214',
-      studentName: 'FAIYAZ ABRAR',
-      program: 'B.Sc. in CSE',
-      department: 'CSE',
-      location: 'Bangladesh',
-      studentPhotoBytes: null, 
-    );
-
-    return MaterialApp(
-      title: 'ID Card Replica',
+    return MaterialApp.router(
+      title: 'Hacker News App',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        useMaterial3: true,
       ),
-      home: const IdCardWidget(cardData: myIdCardData),
+      routerConfig: goRouter,
     );
   }
 }
