@@ -1,31 +1,44 @@
 import 'package:flutter/material.dart';
-import 'id_card_widget.dart';
-import 'id_card_data.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_application_1/core/router.dart';
+import 'package:flutter_application_1/features/notepad_app/providers/theme_provider.dart';
+import 'package:flutter_application_1/features/notepad_app/providers/font_size_provider.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    const ProviderScope(
+      child: MyApp(),
+    ),
+  );
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends ConsumerWidget {
   const MyApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    const IdCardData myIdCardData = IdCardData(
-      studentId: '210041214',
-      studentName: 'FAIYAZ ABRAR',
-      program: 'B.Sc. in CSE',
-      department: 'CSE',
-      location: 'Bangladesh',
-      studentPhotoBytes: null, 
-    );
+  Widget build(BuildContext context, WidgetRef ref) {
+    final goRouter = ref.watch(goRouterProvider);
+    final themeMode = ref.watch(themeModeProvider);
+    final fontSize = ref.watch(fontSizeProvider);
 
-    return MaterialApp(
-      title: 'ID Card Replica',
+    return MaterialApp.router(
+      routerConfig: goRouter,
+      title: 'Notepad App',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        brightness: Brightness.light,
+        primarySwatch: Colors.blue,
+        textTheme: TextTheme(
+          bodyMedium: TextStyle(fontSize: fontSize),
+        ),
       ),
-      home: const IdCardWidget(cardData: myIdCardData),
+      darkTheme: ThemeData(
+        brightness: Brightness.dark,
+        primarySwatch: Colors.blue,
+        textTheme: TextTheme(
+          bodyMedium: TextStyle(fontSize: fontSize),
+        ),
+      ),
+      themeMode: themeMode,
     );
   }
 }
