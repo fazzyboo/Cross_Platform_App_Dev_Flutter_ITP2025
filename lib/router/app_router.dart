@@ -1,102 +1,67 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:rest_api_call/screens/best_stories_screen.dart';
-import 'package:rest_api_call/screens/new_stories_screen.dart';
-import 'package:rest_api_call/screens/news_details_screen.dart';
-import 'package:rest_api_call/screens/top_stories_screen.dart';
+import 'package:cross_platform_app_dev_flutter_itp2025/auth/email_verification_page.dart';
+import 'package:cross_platform_app_dev_flutter_itp2025/auth/forgot_password_page.dart';
+import 'package:cross_platform_app_dev_flutter_itp2025/auth/login_page.dart';
+import 'package:cross_platform_app_dev_flutter_itp2025/auth/signup_page.dart';
+import 'package:cross_platform_app_dev_flutter_itp2025/main.dart'; // For HomePage
+import 'package:cross_platform_app_dev_flutter_itp2025/account_page.dart';
+import 'package:cross_platform_app_dev_flutter_itp2025/utils/constants.dart'; // For supabase client
 
-final _rootNavigatorKey = GlobalKey<NavigatorState>();
-final _shellNavigatorKey = GlobalKey<NavigatorState>();
-
-final goRouter = GoRouter(
-  initialLocation: '/top',
-  navigatorKey: _rootNavigatorKey,
-  routes: [
-    ShellRoute(
-      navigatorKey: _shellNavigatorKey,
-      builder: (context, state, child) {
-        return ScaffoldWithNavBar(child: child);
+final GoRouter goRouter = GoRouter(
+  routes: <RouteBase>[
+    GoRoute(
+      path: '/',
+      builder: (BuildContext context, GoRouterState state) {
+        return const HomePage();
       },
-      routes: [
-        GoRoute(
-          path: '/top',
-          pageBuilder: (context, state) => const NoTransitionPage(
-            child: TopStoriesScreen(),
-          ),
-        ),
-        GoRoute(
-          path: '/best',
-          pageBuilder: (context, state) => const NoTransitionPage(
-            child: BestStoriesScreen(),
-          ),
-        ),
-        GoRoute(
-          path: '/new',
-          pageBuilder: (context, state) => const NoTransitionPage(
-            child: NewStoriesScreen(),
-          ),
-        ),
-      ],
     ),
     GoRoute(
-      path: '/details/:itemId', // Top-level route
-      parentNavigatorKey: _rootNavigatorKey, // Use the root navigator
-      builder: (context, state) => NewsDetailsScreen(
-        itemId: int.parse(state.pathParameters['itemId']!),
-      ),
+      path: '/login',
+      builder: (BuildContext context, GoRouterState state) {
+        return const LoginPage();
+      },
+    ),
+    GoRoute(
+      path: '/signup',
+      builder: (BuildContext context, GoRouterState state) {
+        return const SignUpPage();
+      },
+    ),
+    GoRoute(
+      path: '/forgot-password',
+      builder: (BuildContext context, GoRouterState state) {
+        return const ForgotPasswordPage();
+      },
+    ),
+    GoRoute(
+      path: '/email-verification',
+      builder: (BuildContext context, GoRouterState state) {
+        return const EmailVerificationPage();
+      },
+    ),
+    GoRoute(
+      path: '/account',
+      builder: (BuildContext context, GoRouterState state) {
+        return const AccountPage();
+      },
     ),
   ],
+  redirect: (BuildContext context, GoRouterState state) {
+    final bool loggedIn = supabase.auth.currentUser != null;
+    final bool loggingIn = state.matchedLocation == '/login' ||
+        state.matchedLocation == '/signup' ||
+        state.matchedLocation == '/forgot-password';
+
+    // If not logged in, and not on a login/signup/forgot-password page, redirect to login
+    if (!loggedIn && !loggingIn) {
+      return '/login';
+    }
+    // If logged in, and on a login/signup/forgot-password page, redirect to home
+    if (loggedIn && loggingIn) {
+      return '/';
+    }
+    // No redirection needed
+    return null;
+  },
 );
-
-class ScaffoldWithNavBar extends StatelessWidget {
-  const ScaffoldWithNavBar({
-    required this.child,
-    super.key,
-  });
-
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: child,
-      bottomNavigationBar: BottomNavigationBar(
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.trending_up), label: 'Top'),
-          BottomNavigationBarItem(icon: Icon(Icons.star), label: 'Best'),
-          BottomNavigationBarItem(icon: Icon(Icons.new_releases), label: 'New'),
-        ],
-        currentIndex: _calculateSelectedIndex(context),
-        onTap: (int idx) => _onItemTapped(idx, context),
-      ),
-    );
-  }
-
-  static int _calculateSelectedIndex(BuildContext context) {
-    final String location = GoRouterState.of(context).uri.toString();
-    if (location.startsWith('/top')) {
-      return 0;
-    }
-    if (location.startsWith('/best')) {
-      return 1;
-    }
-    if (location.startsWith('/new')) {
-      return 2;
-    }
-    return 0;
-  }
-
-  void _onItemTapped(int index, BuildContext context) {
-    switch (index) {
-      case 0:
-        context.go('/top');
-        break;
-      case 1:
-        context.go('/best');
-        break;
-      case 2:
-        context.go('/new');
-        break;
-    }
-  }
-}
