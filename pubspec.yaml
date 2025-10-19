@@ -10,8 +10,9 @@ dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^1.0.2
-  supabase_flutter: ^2.0.0 # Add this line for Supabase integration
-  go_router: ^14.0.0 # Add this line for navigation
+  http: ^1.2.1 # For making API calls to LM Studio
+  shared_preferences: ^2.2.3 # For local key-value storage
+  video_player: ^2.8.6 # For playing background video animation
 
 dev_dependencies:
   flutter_test:
@@ -22,3 +23,4 @@ flutter:
   uses-material-design: true
   assets:
     - assets/images/
+    - assets/videos/Lines-moving-right.mp4
